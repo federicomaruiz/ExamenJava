@@ -24,6 +24,7 @@ import java.awt.event.KeyEvent;
  */
 public class Vista extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private Modelo modelo;
 	private Controlador controlador;
 	private JPanel contentPane;

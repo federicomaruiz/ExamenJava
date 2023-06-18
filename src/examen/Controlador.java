@@ -43,7 +43,8 @@ public class Controlador {
 	}
 
 	/**
-	 * Cargo los datos y limpio los input
+	 * Cargo los datos y limpio los input una ves cargados
+	 * LLamo al modelo para modificar mi BD.
 	 * 
 	 */
 	public void cargarDatos() {
@@ -56,38 +57,33 @@ public class Controlador {
 
 	}
 
-
 	/**
 	 * Valido el nombre con el metodo matches que solo hayan caracters alfabeticos y
 	 * espacios en blanco
 	 */
 	public boolean validaNombre() {
-		String user = vista.getTxtNombre().getText();
-		if (user.matches("[a-zA-Zá-úÁ-Ú\s]+")) {
-			return true;
-		} else {
-			return false;
-		}
+		boolean valido = modelo.validaNombre();
+		return valido;
 	}
 
 	/*
-	 * Calculo la edad media accedo a la segunda columna que es donde estan los años
-	 * los sumo y los divido por el total de personas, luego le resto el año actual para sacar
-	 * la media de edad.
-	 * */
+	 * Creo una lista donde guardo el año de nacimiento de todos mis personas
+	 * Luego lo convierto en un array de objetos para poder llamar al metodo GetEdadMedia
+	 * que va a calcular la edad media y me devovlera un float.
+	 */
 	public float calcularEdad() {
 		float res = 0f;
-		int suma = 0;
 		int filas = modelo.getMiTabla().getRowCount();
+		List<String> miLista = new ArrayList<>();
 		for (int i = 0; i < filas; i++) {
-			String años = (String) modelo.getMiTabla().getValueAt(i, 1);
-			suma += Integer.parseInt(años);
+			miLista.add((String) modelo.getMiTabla().getValueAt(i, 1));
 		}
-		suma = suma / filas;
-		res = 2023 - suma;
+		Object [] arreglo = miLista.toArray(new Object[0]);
+		res = modelo.getEdadMedia(arreglo);
 		return res;
 	}
 
+	//
 	/**
 	 * Para la edad compruebo que la fecha de nacimiento tenga 4 digitos
 	 */
@@ -102,44 +98,20 @@ public class Controlador {
 	}
 
 	/**
-	 * En una lista voy a guardar todas las primeras letras de todos los nombres,
-	 * Luego con un bucle anidado voy recorriendo la lista para saber cual es la letra que mas se repite
-	 *
+	 * En una lista voy a guardar todos los nombres que tengo en mi tabla
+	 * luegeo convierto la lista en un array de objetos para enviarsela al metodo
+	 * GetMasUsada que me va a devolver un char con la  letra mas usada
 	 */
 	public char letraRepetida() {
-		modelo.getMasUsada(null);
 		int filas = modelo.getMiTabla().getRowCount();
-		char letraRepetida;
-		String letra;
 		List<String> listaLetras = new ArrayList<>();
-		String masRep = "";
-		int count = 0;
-		int max = 0;
 		for (int i = 0; i < filas; i++) {
-			letra = (String) modelo.getMiTabla().getValueAt(i, 0);
-			letraRepetida = letra.toLowerCase().charAt(0);
-			letra = String.valueOf(letraRepetida);
+			String letra = (String) modelo.getMiTabla().getValueAt(i, 0);
+			letra = letra.toLowerCase();
 			listaLetras.add(letra);
 		}
-		for (int i = 0; i < listaLetras.size(); i++) {
-			count = 0;
-			for (int j = 0; j < listaLetras.size(); j++) {
-				String letraUno = listaLetras.get(i);
-				String letraDos = listaLetras.get(j);
-
-				if (letraUno.equals(letraDos)) {
-					count++;
-				}
-				if (count > max) {
-					max = count;
-					masRep = listaLetras.get(i);
-				}
-
-			}
-		}
-		letraRepetida = masRep.charAt(0);
-		return letraRepetida;
+		Object[] arreglo = listaLetras.toArray(new Object[0]);
+		return modelo.getMasUsada(arreglo);
 	}
-
 
 }

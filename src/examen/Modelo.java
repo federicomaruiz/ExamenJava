@@ -20,13 +20,11 @@ import javax.swing.table.DefaultTableModel;
  * 
  *         COMENTARIO !! No lo hice con ficheros voy hacer con base de datos
  * 
- * 
- *         create database users; use users; create table nombres( Nombre
+
+ *         create database users;
+ *         use users; 
+ *         create table nombres( Nombre
  *         varchar(30), AñoNacimiento int );
- *         create table nombres(
-			Nombre varchar(30),
-			AñoNacimiento int
-			);
  * 
  * 
  * 
@@ -45,14 +43,13 @@ public class Modelo extends Info implements Gestionar {
 	private ResultSet rs;
 	private ResultSetMetaData rsmd;
 	private DefaultTableModel miTabla;
-
-	//private String nombre;
-	//private int añoNacimiento;
+	private String nombre;
+	private int añoNacimiento;
 
 	/*
 	 * Hago la conexion a la base de datos pinto la tabla añado los nombres de las
 	 * cabeceras y luego las columnas
-	 *  
+	 * 
 	 */
 
 	Modelo() {
@@ -129,17 +126,17 @@ public class Modelo extends Info implements Gestionar {
 	 * @param user2
 	 * @param año
 	 * 
-	 *              Añado el usuario a la base de datos y a mis listas para luego
-	 *              sacar la media de edad y la inicial mas usuada.
+	 * Añado el usuario a mi base de datos
 	 */
 	public int añadir(String user2, String año) {
+		añoNacimiento = Integer.parseInt(año);
+		nombre = user2;
 		int res = 0;
 		String sqlInsert = "INSERT into nombres set Nombre=? , AñoNacimiento=? ";
-		int añoInt = Integer.parseInt(año);
 		try {
 			ps = conexion.prepareStatement(sqlInsert);
-			ps.setString(1, user2);
-			ps.setLong(2, añoInt);
+			ps.setString(1, nombre);
+			ps.setLong(2, añoNacimiento);
 			res = ps.executeUpdate();
 			System.out.println("Añadido");
 		} catch (SQLException e) {
@@ -149,28 +146,73 @@ public class Modelo extends Info implements Gestionar {
 		}
 		return res;
 	}
+
 	/**
 	 * @return the miTabla
 	 */
 	public DefaultTableModel getMiTabla() {
 		return miTabla;
 	}
-
+	/*
+	 * Recorro el array y lo voy acumulando en total, luego divido el total por la 
+	 * cantidad de personas y le resto el año actual, obtengo la media de edad
+	 * */
 	@Override
 	public float getEdadMedia(Object[] miLista) {
-		// TODO Auto-generated method stub
-		return 0;
+		int total = 0;
+		float respuesta;
+		for (Object object : miLista) {
+			total += Integer.parseInt((String) object);
+		}
+		int cantidadPersonas = getMiTabla().getRowCount();
+		int edadMedia = total / cantidadPersonas;
+		respuesta = 2023 - edadMedia;
+		return respuesta;
 	}
 
+	/*
+	 * Recorro el array de objetos con dos bucles anidados , accedo al primer nombre
+	 * miro la primera letra y la comparado con la de todos los nombres cuando
+	 * encuentra dos letras repetidas count ++ , y la var masRep toma el valor de
+	 * esa letra tambien modifico el maxCount para saber que de momento es la letra
+	 * mas repetida. Asi sucesivamente hasta recorrer toda el array.
+	 **/
 	@Override
 	public char getMasUsada(Object[] miLista) {
-	
-		return 0;
+		int maxCount = 0;
+		char masRep = '\0';
+
+		for (Object elemento : miLista) {
+			String nombre = (String) elemento;
+			char primeraLetra = nombre.charAt(0);
+			int count = 0;
+
+			for (Object obj : miLista) {
+				String otroNombre = (String) obj;
+				if (otroNombre.charAt(0) == primeraLetra) {
+					count++;
+				}
+			}
+
+			if (count > maxCount) {
+				maxCount = count;
+				masRep = primeraLetra;
+			}
+		}
+		return masRep;
 	}
 
+	/*
+	 * Compruebo que el nombre introducio solo tengo letras del abecedario español y
+	 * tambien pueda introducir esapcios en blanco
+	 */
 	@Override
 	public boolean validaNombre() {
-		// TODO Auto-generated method stub
-		return false;
-	}	
+		String user = vista.getTxtNombre().getText();
+		if (user.matches("[a-zA-Zá-úÁ-Ú\s]+")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
