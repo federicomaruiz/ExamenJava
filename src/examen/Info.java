@@ -9,7 +9,7 @@ package examen;
  */
 public abstract class Info {
 	
-	private String nombre;
-	private int añoNacimiento;
+	 String nombre;
+	 int anoNacimiento;
 	public abstract boolean validaNombre();
 }

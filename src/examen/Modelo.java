@@ -20,7 +20,6 @@ import javax.swing.table.DefaultTableModel;
  * 
  *         COMENTARIO !! No lo hice con ficheros voy hacer con base de datos
  * 
-
  *         create database users;
  *         use users; 
  *         create table nombres( Nombre
@@ -43,8 +42,6 @@ public class Modelo extends Info implements Gestionar {
 	private ResultSet rs;
 	private ResultSetMetaData rsmd;
 	private DefaultTableModel miTabla;
-	private String nombre;
-	private int añoNacimiento;
 
 	/*
 	 * Hago la conexion a la base de datos pinto la tabla añado los nombres de las
@@ -129,14 +126,14 @@ public class Modelo extends Info implements Gestionar {
 	 * Añado el usuario a mi base de datos
 	 */
 	public int añadir(String user2, String año) {
-		añoNacimiento = Integer.parseInt(año);
-		nombre = user2;
+		super.anoNacimiento = Integer.parseInt(año);
+		super.nombre = user2;
 		int res = 0;
-		String sqlInsert = "INSERT into nombres set Nombre=? , AñoNacimiento=? ";
+		String sqlInsert = "INSERT into nombres set Nombre=? , AnoNacimiento=? ";
 		try {
 			ps = conexion.prepareStatement(sqlInsert);
-			ps.setString(1, nombre);
-			ps.setLong(2, añoNacimiento);
+			ps.setString(1, super.nombre);
+			ps.setLong(2, super.anoNacimiento);
 			res = ps.executeUpdate();
 			System.out.println("Añadido");
 		} catch (SQLException e) {

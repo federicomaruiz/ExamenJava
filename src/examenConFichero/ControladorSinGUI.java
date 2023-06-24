@@ -1,4 +1,4 @@
-package examenConFichero;
+ package examenConFichero;
 
 import java.io.File;
 import java.io.FileWriter;
